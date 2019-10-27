@@ -29,13 +29,13 @@ h1,h2,h3,h4{
     flex-flow:column;
     flex:1 1 auto;
 }
-#inputGroup > *{
-    
+#inputGroup > *{    
     margin-bottom: 5px;
 }
-#searches{
-    
+input{
+    padding-left: 10px;
 }
+
 #searches button:not(:first-child){
     border-top:unset;
 }

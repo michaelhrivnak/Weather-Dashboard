@@ -22,6 +22,7 @@ function init(){
     //calculate height for search section    
     $("#searchPanel").css("height",$(window).innerHeight()-$("#header").outerHeight());
     
+    //make sure height stays consistent even with resize
     $(window).resize(function(){        
         $("#searchPanel").css("height",$(document).height()-$("#header").outerHeight());
     });
@@ -95,13 +96,13 @@ function getCurrentWeather(data){
                             $("<h3>").text(correctCase(data.name)+", "
                                     +data.sys.country.toUpperCase())
                             ,$("<h4>").text(moment.unix(data.dt).format("dddd, MMM Do YYYY"))
-                                    .append($("<img>").attr("src", "https://openweathermap.org/img/wn/"+data.weather[0].icon+"@2x.png")
-                                                      .addClass("currentWeatherImg")
-                                                      .attr("data-toggle","tooltip")
-                                                      .attr("data-placement","right")                                                      
-                                                      .attr("title",data.weather[0].description)
-                                                      .tooltip())
-                            ,$("<p>").text("Temperature: " + data.main.temp + "°"+units.deg)
+                            .append($("<img>").attr("src", "https://openweathermap.org/img/wn/"+data.weather[0].icon+"@2x.png")
+                                                .addClass("currentWeatherImg")
+                                                .attr("data-toggle","tooltip")
+                                                .attr("data-placement","right")                                                      
+                                                .attr("title",data.weather[0].description)
+                                                .tooltip())
+                            ,$("<p>").text("Temperature: " + Math.round(data.main.temp) + "°"+units.deg)
                             ,$("<p>").text("Humidity: "+ data.main.humidity+"%")
                             ,$("<p>").text("Wind Speed: "+ data.wind.speed+" "+units.speed)
                             ,$("<p>").text("UV Index: ").append($("<div>").attr("id", "UVIndex"))
@@ -174,11 +175,12 @@ function getUV(data){
 
 function getWeatherForecast(data){
     if(data != null){
-        forecastDiv.empty();
-        let dayCardContainer = $("<div>").attr("id","dayCardContainer")
-        forecastDiv.append($("<h3>").text("5-Day Forecast:"),
-                            dayCardContainer);
         
+        forecastDiv.empty();
+        
+        let dayCardContainer = $("<div>").attr("id","dayCardContainer")
+
+        forecastDiv.append($("<h3>").text("5-Day Forecast:"),dayCardContainer);        
         dailyData = createDailyData(data);
         console.log(dailyData);
 
@@ -190,11 +192,15 @@ function getWeatherForecast(data){
         alert("Something went wrong getting forecast data, please try again");
     }
 }
-
+//for now arbitrarily starts at the index 5/40 of returned results as it is in 3 hour intervals
 function createDailyData(data){
+
     let dailyData = [];
+    //increments by 8 due to 8 * 3 hours = 1 day
     for(var i = 5; i < data.list.length; i += 8){
+        
         let dataList = data.list[i];
+
         dailyData.push(newDay(dataList.dt,
                             dataList.weather[0].icon,
                             dataList.weather[0].description,
@@ -215,7 +221,7 @@ function createForecastCard(day){
                         .attr("data-placement","right")
                         .attr("title",day.description)
                         .tooltip(),
-            $("<p>").text("Temperature: " + day.temp + "°"+units.deg),
+            $("<p>").text("Temperature: " + Math.round(day.temp) + "°"+units.deg),
             $("<p>").text("Humidity: "+ day.humidity+"%")
         );
 
@@ -236,14 +242,13 @@ function addNewSearch(city){
 }
 
 function clearSearches(){
+
     localStorage.removeItem(lsKey);
     searchesDiv.empty();
     storedSearches = null;
 }
+//get started
 init();
-
-
-
 
 //helper functions
 function getDayOfWeek(date){
@@ -275,5 +280,3 @@ function testFunction(mFunction,...args){
 function newDay(date,icon,description,temp,humidity){
     return {date: date,icon: icon,description: description, temp: temp, humidity: humidity};
 }
-
- 
