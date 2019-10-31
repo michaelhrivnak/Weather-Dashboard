@@ -9,13 +9,14 @@
         <link rel="stylesheet" href="./assets/style.css" />
         <title>Weather Dashboard</title>
     </head>
-    <body>
+    <body> 
+        
         <div id="header" class="text-center bg-dark">
             <h1>Weather Dashboard</h1>
         </div>
-        <div class="row">
-            <div id="searchPanel" class="col-5 col-md-4 col-lg-3">
-                <label><h4>Search For a City:</h4></label><br>
+        <div class="row">            
+            <div id="searchPanel">
+                <label><h4>Search For a City:</h4></label>
                 <div id="inputGroup">
                     <input id="searchInput" type="text">
                     <button id="searchBtn" class="btn searchBtn" data-toggle="tooltip" title="Search">
@@ -25,10 +26,12 @@
                 </div>
                 <div id="searches"></div>
             </div>
+        
             <div id="mainContent" class="col">
                 <div id="currentWeather"><h3>Search for a city or select a previously searched City</h3></div>
                 <div id="forecast"></div>
             </div>
+            
         </div>
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

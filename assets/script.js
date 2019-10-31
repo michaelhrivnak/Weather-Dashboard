@@ -9,23 +9,19 @@ const clearBtn = $("#clear");
 var storedSearches = getStoredSearches();
 //variable used to store and determine if the city needs to be added to the search history
 var addedCity = newCity();
-var units = {deg:"C",speed:"KPH"};
+//unit variables for future development of switching between unit systems.
 const metricUnits = {deg:"C", speed:"KPH"};
 const impUnits = {deg:"F",speed:"MPH"};
+var units = metricUnits;
+
 
 function init(){
 
+    //enable tooltips
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
-
-    //calculate height for search section    
-    $("#searchPanel").css("height",$(window).innerHeight()-$("#header").outerHeight());
     
-    //make sure height stays consistent even with resize
-    $(window).resize(function(){        
-        $("#searchPanel").css("height",$(document).height()-$("#header").outerHeight());
-    });
 
     buildSearchHistory();
 
@@ -67,6 +63,7 @@ function searchButtonClicked(){
     let cityVal = searchInput.val().trim();
     let city = newCity(cityVal, null);       
     getWeather(city);
+    //clear the value once the search is activated
     searchInput.val("");        
 }
 
@@ -78,17 +75,16 @@ function getWeather(city){
     if(city.country == null){
         queryURLCurrent = "https://api.openweathermap.org/data/2.5/weather?q="+city.city+"&units=metric&appid="+APIKey;
         queryURLForecast = "https://api.openweathermap.org/data/2.5/forecast?q="+city.city+"&units=metric&appid="+APIKey;
-    }else{
-        
+    }else{        
         queryURLCurrent = "https://api.openweathermap.org/data/2.5/weather?q="+city.city+","+city.country+"&units=metric&appid="+APIKey;
         queryURLForecast = "https:////api.openweathermap.org/data/2.5/forecast?q="+city.city+","+city.country+"&units=metric&appid="+APIKey;
     }
     
-    performAPIGETCall(queryURLCurrent, getCurrentWeather);
-    performAPIGETCall(queryURLForecast, getWeatherForecast);    
+    performAPIGETCall(queryURLCurrent, buildCurrentWeather);
+    performAPIGETCall(queryURLForecast, buildForecastWeather);    
 }
 
-function getCurrentWeather(data){
+function buildCurrentWeather(data){
     //console.log(data);
     if(data != null){
         currentWeatherDiv.empty();
@@ -110,7 +106,7 @@ function getCurrentWeather(data){
 
         let UVqueryURL = "https://api.openweathermap.org/data/2.5/uvi?appid="+APIKey+"&lat="+data.coord.lat+"&lon="+data.coord.lon;
         
-        performAPIGETCall(UVqueryURL,getUV);
+        performAPIGETCall(UVqueryURL,buildUV);
 
         if(addedCity.country == null){
             addedCity.country = data.sys.country;
@@ -124,7 +120,7 @@ function getCurrentWeather(data){
     }            
 }
 
-function getUV(data){
+function buildUV(data){
     if(data != null){
 
         let UVIndex = data.value;
@@ -173,19 +169,18 @@ function getUV(data){
     }
 }
 
-function getWeatherForecast(data){
+function buildForecastWeather(data){
     if(data != null){
         
         forecastDiv.empty();
         
-        let dayCardContainer = $("<div>").attr("id","dayCardContainer")
+        let dayCardContainer = $("<div>").attr("id","dayCardContainer").addClass("row")
 
         forecastDiv.append($("<h3>").text("5-Day Forecast:"),dayCardContainer);        
-        dailyData = createDailyData(data);
-        console.log(dailyData);
+        dailyData = parseDailyData(data);        
 
         dailyData.forEach(element => {
-            dayCardContainer.append(createForecastCard(element));
+            dayCardContainer.append(buildForecastCard(element));
         });
         
     }else{
@@ -193,7 +188,7 @@ function getWeatherForecast(data){
     }
 }
 //for now arbitrarily starts at the index 5/40 of returned results as it is in 3 hour intervals
-function createDailyData(data){
+function parseDailyData(data){
 
     let dailyData = [];
     //increments by 8 due to 8 * 3 hours = 1 day
@@ -210,8 +205,8 @@ function createDailyData(data){
     return dailyData;
 }
 
-function createForecastCard(day){
-    let dayCard = $("<div>").attr("class","dayCard");
+function buildForecastCard(day){
+    let dayCard = $("<div>").attr("class","dayCard col-12 col-md-5 col-lg-2");
 
         dayCard.append(
             $("<label>").text(getDayOfWeek(day.date)),
