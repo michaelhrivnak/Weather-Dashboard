@@ -87,6 +87,7 @@ function getWeather(city){
 function buildCurrentWeather(data){
     //console.log(data);
     if(data != null){
+        console.log(units,metricUnits,data.wind.speed);
         currentWeatherDiv.empty();
         currentWeatherDiv.append(
                             $("<h3>").text(correctCase(data.name)+", "
@@ -100,7 +101,7 @@ function buildCurrentWeather(data){
                                                 .tooltip())
                             ,$("<p>").text("Temperature: " + Math.round(data.main.temp) + "°"+units.deg)
                             ,$("<p>").text("Humidity: "+ data.main.humidity+"%")
-                            ,$("<p>").text("Wind Speed: "+ data.wind.speed+" "+units.speed)
+                            ,$("<p>").text("Wind Speed: "+(Math.round((units === metricUnits)?(data.wind.speed*3.6):data.wind.speed))+" "+units.speed)
                             ,$("<p>").text("UV Index: ").append($("<div>").attr("id", "UVIndex"))
         );
 
